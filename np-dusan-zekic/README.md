@@ -1,62 +1,101 @@
-# Napredno programiranje — priprema radnog okruženja
+# Mini projekat 1 — refaktoring obrade rezervacija
 
 Autor: Dušan Zekić
 
-## Opis projekta
+## Cilj projekta
 
-Projekat sadrži funkciju prosjecna_cijena koja iz CSV fajla
-računa prosječnu cijenu noćenja.
+Refaktorisati početni monolitni program za obradu rezervacija
+primjenom principa S i D.
 
-Prosjek se računa kao ukupna vrijednost rezervacija podijeljena
-ukupnim brojem noćenja.
+Program učitava rezervacije, računa njihove iznose i čuva
+tekstualni izvještaj.
 
-CSV fajl sadrži kolone:
-- gost
-- noci
-- cijena_noci
+## Početna verzija
+
+Fajl prije.py sadrži sopstvenu skriptu.
+
+Funkcija obradi_rezervacije istovremeno učitava CSV,
+računa iznose i zapisuje izvještaj.
+
+## Refaktorisana verzija
+
+Fajl rezervacije.py sadrži:
+
+- Rezervacija: podaci i iznos pojedinačne rezervacije.
+- CsvIzvor: učitavanje rezervacija iz CSV fajla.
+- TekstualniIzvjestaj: zapisivanje izvještaja.
+- ServisRezervacija: koordinacija obrade.
+- IzvorPodataka: Protocol za učitavanje podataka.
+- Izvjestavanje: Protocol za čuvanje izvještaja.
+
+## Primjena SOLID principa
+
+### S — Single Responsibility
+
+Učitavanje, obračun i zapisivanje izvještaja razdvojeni su
+u posebne komponente.
+
+### D — Dependency Inversion
+
+Servis prima izvor podataka i izvještaj kroz konstruktor.
+Zavisi od Protocol ugovora, a ne od konkretne CSV implementacije.
+
+## Očuvanje ponašanja
+
+Obje verzije računaju iznos kao noci * cijena_noci.
+
+Izvještaj je u obje verzije tekstualni zapis liste iznosa.
+Prazan CSV sa zaglavljem daje praznu listu.
 
 ## Instalacija
-
-Potrebni su Python 3.12 ili noviji i paketi iz requirements.txt.
 
 ```bash
 python -m pip install -r requirements.txt
 ```
 
-## Pokretanje testova
+## Pokretanje
+
+Komande se izvršavaju iz foldera mini_projekat_1.
+
+```bash
+python rezervacije.py
+```
+
+## Testiranje
 
 ```bash
 python -m pytest -v
 ```
 
-## Provjera i formatiranje koda
+Tri testa koriste zamjenski izvor i zamjensko izvještavanje.
+Provjeravaju više rezervacija, prazan izvor i decimalnu cijenu.
+
+## Provjera koda
 
 ```bash
-ruff check .
-ruff format .
+python -m ruff check .
+python -m ruff format .
 ```
 
 ## Korišćenje AI asistenta
 
-Koristio sam Perplexity za pomoć pri pripremi projekta,
-implementaciji funkcije i pisanju testova.
+Korišćen je Perplexity.
 
 Upotrijebljeni upit:
-„kako ovo da se uradi i što više objašnjenja zašto i kako radi?“ uz priloženu sliku zadatka.
+„ovo je iz prezentacije 2 nedjelja, kako se ovo radi i objasni mi sve po stepu?“
+uz priloženu sliku zadatka.
 
-## Uočeni nedostaci i ograničenja generisanog koda
+AI je predložio početni skript, refaktorisanu verziju i testove.
 
-- Funkcija pretpostavlja da CSV sadrži kolone noci i cijena_noci.
-  Nedostajuća kolona izaziva KeyError bez posebno prilagođene poruke.
-- Nenumeričke vrijednosti izazivaju ValueError, ali poruka ne navodi
-  red CSV fajla u kojem je greška.
-- Funkcija koristi float, što nije idealno za precizne finansijske
-  obračune.
-- Testovi ne pokrivaju sve slučajeve, na primjer nepostojeći fajl
-  ili neispravne nazive kolona.
+## Pregled i ispravke generisanog koda
 
-## Poboljšanja u odnosu na primjer sa vježbi
+Ovdje navesti stvarno izvršene provjere i izmjene nakon
+pokretanja i pregleda koda.
 
-- Dodata je provjera negativnog broja noćenja i negativne cijene.
-- Testovi koriste privremene fajlove umjesto fiksne Colab putanje.
-- Dodat je test sa različitim brojem noćenja po rezervaciji.# np-dusan-zekic
+## Ograničenja
+
+- Nema dodatne validacije negativnih vrijednosti.
+- Greške u CSV kolonama i vrijednostima nemaju prilagođene poruke.
+- Za cijene se koristi float.
+- Tri osnovna testa provjeravaju servis, ali ne provjeravaju
+  stvarno čitanje CSV-a ni zapisivanje izvještaja na disk.
